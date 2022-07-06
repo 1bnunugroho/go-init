@@ -10,6 +10,7 @@ import (
 	"github.com/qiangxue/go-rest-api/pkg/log"
 	"time"
 	"golang.org/x/crypto/bcrypt"
+
 )
 
 // Service encapsulates the authentication logic.
@@ -19,6 +20,8 @@ type Service interface {
 	Login(ctx context.Context, username, password string) (string, error)
 	Register(ctx context.Context, input CreateUserRequest) (User, error)
 	Get(ctx context.Context, id string) (User, error)
+	Query(ctx context.Context, offset, limit int) ([]User, error)
+	Count(ctx context.Context) (int, error)
 }
 
 // User represents the data about an user.
@@ -28,7 +31,7 @@ type User struct {
 
 // CreateUserRequest represents an user creation request.
 type CreateUserRequest struct {
-	Email string `json:"name"`
+	Email string `json:"email"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -46,7 +49,7 @@ func (m CreateUserRequest) Validate() error {
 type Identity interface {
 	// GetID returns the user ID.
 	GetID() string
-	// GetName returns the user name.
+	// GetEmail returns the user email.
 	GetEmail() string
 }
 
@@ -94,7 +97,25 @@ func (s service) Register(ctx context.Context, req CreateUserRequest) (User, err
 	return s.Get(ctx, id)
 }
 
-// Get returns the album with the specified the album ID.
+// Count returns the number of users.
+func (s service) Count(ctx context.Context) (int, error) {
+	return s.repo.Count(ctx)
+}
+
+// Query returns the albums with the specified offset and limit.
+func (s service) Query(ctx context.Context, offset, limit int) ([]User, error) {
+	items, err := s.repo.Query(ctx, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+	result := []User{}
+	for _, item := range items {
+		result = append(result, User{item})
+	}
+	return result, nil
+}
+
+// Get returns the user with the specified the user ID.
 func (s service) Get(ctx context.Context, id string) (User, error) {
 	user, err := s.repo.Get(ctx, id)
 	if err != nil {
@@ -166,7 +187,6 @@ func (s service) authenticate(ctx context.Context, username, password string) Id
 			}
 		}
 	}
-
 
 	logger.Infof("authentication failed")
 	return nil

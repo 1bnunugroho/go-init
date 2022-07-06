@@ -4,6 +4,7 @@ import (
 	routing "github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/qiangxue/go-rest-api/internal/errors"
 	"github.com/qiangxue/go-rest-api/pkg/log"
+	"github.com/qiangxue/go-rest-api/pkg/pagination"
 	"net/http"
 )
 
@@ -11,6 +12,7 @@ import (
 func RegisterHandlers(rg *routing.RouteGroup, service Service, logger log.Logger) {
 	rg.Post("/login", login(service, logger))
 	rg.Post("/register", register(service, logger))
+	rg.Get("/users", query(service, logger))
 }
 
 // login returns a handler that handles user login request.
@@ -52,5 +54,22 @@ func register(service Service, logger log.Logger) routing.Handler {
 			return err
 		}
 		return c.WriteWithStatus(user, http.StatusCreated)
+	}
+}
+
+func query(service Service, logger log.Logger) routing.Handler {
+	return func(c *routing.Context) error {
+		
+		count, err := service.Count(c.Request.Context())
+		if err != nil {
+			return err
+		}
+		pages := pagination.NewFromRequest(c.Request, count)
+		users, err := service.Query(c.Request.Context(), pages.Offset(), pages.Limit())
+		if err != nil {
+			return err
+		}
+		pages.Items = users
+		return c.Write(pages)
 	}
 }
