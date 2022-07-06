@@ -5,7 +5,6 @@ import (
 	"github.com/qiangxue/go-rest-api/internal/errors"
 	"github.com/qiangxue/go-rest-api/pkg/log"
 	"github.com/qiangxue/go-rest-api/pkg/pagination"
-	"net/http"
 )
 
 // RegisterHandlers registers handlers for different HTTP requests.
@@ -49,11 +48,13 @@ func register(service Service, logger log.Logger) routing.Handler {
 			return errors.BadRequest("")
 		}
 
-		user, err := service.Register(c.Request.Context(), input)
+		id, err := service.Register(c.Request.Context(), input)
 		if err != nil {
 			return err
 		}
-		return c.WriteWithStatus(user, http.StatusCreated)
+		return c.Write(struct {
+			ID string `json:"id"`
+		}{id})
 	}
 }
 

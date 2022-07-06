@@ -18,7 +18,7 @@ type Service interface {
 	// authenticate authenticates a user using username and password.
 	// It returns a JWT token if authentication succeeds. Otherwise, an error is returned.
 	Login(ctx context.Context, username, password string) (string, error)
-	Register(ctx context.Context, input CreateUserRequest) (User, error)
+	Register(ctx context.Context, input CreateUserRequest) (string, error)
 	Get(ctx context.Context, id string) (User, error)
 	Query(ctx context.Context, offset, limit int) ([]User, error)
 	Count(ctx context.Context) (int, error)
@@ -76,25 +76,48 @@ func (s service) Login(ctx context.Context, username, password string) (string, 
 
 // Register register a user.
 // Otherwise, an error is returned.
-func (s service) Register(ctx context.Context, req CreateUserRequest) (User, error) {
-	
+func (s service) Register(ctx context.Context, req CreateUserRequest) (string, error) {
+	logger := s.logger.With(ctx, "req", req)
 	if err := req.Validate(); err != nil {
-		return User{}, err
+		return "", err
 	}
+	
+	logger.Infof("Validate successful")
+
 	id := entity.GenerateID()
+	logger.Infof(id)
+
 	now := time.Now()
+	logger.Infof("time")
+/*
+	spass := getPwd(req.Password)
+	logger.Infof("spass")
+
+	Password := hashAndSalt(spass)
+	logger.Infof("hashp")
+*/
+
 	err := s.repo.Create(ctx, entity.User{
 		ID:        	id,
 		Email:      req.Email,
 		Username:	req.Username,
-		Password:	hashAndSalt(getPwd(req.Password)),
+		//Password:	hashAndSalt(getPwd(req.Password)),
+		Password:	req.Password,
+		//Password:	Password,
 		CreatedAt: 	now,
 		UpdatedAt: 	now,
 	})
+
 	if err != nil {
-		return User{}, err
+		//return id, nil
+		logger.Infof("Error create")
+		return "", err	
 	}
-	return s.Get(ctx, id)
+
+	//if err != nil {
+		logger.Infof("harusnya sukses")
+		return id, nil
+	//}
 }
 
 // Count returns the number of users.
