@@ -93,7 +93,7 @@ func buildHandler(logger log.Logger, db *dbcontext.DB, cfg *config.Config) http.
 	)
 
 	auth.RegisterHandlers(rg.Group(""),
-		auth.NewService(cfg.JWTSigningKey, cfg.JWTExpiration, logger),
+		auth.NewService(cfg.JWTSigningKey, cfg.JWTExpiration, auth.NewRepository(db, logger), logger),
 		logger,
 	)
 

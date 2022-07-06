@@ -8,7 +8,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 # install migrate which will be used by entrypoint.sh to perform DB migration
-ARG MIGRATE_VERSION=4.7.1
+ARG MIGRATE_VERSION=4.10.0
 ADD https://github.com/golang-migrate/migrate/releases/download/v${MIGRATE_VERSION}/migrate.linux-amd64.tar.gz /tmp
 RUN tar -xzf /tmp/migrate.linux-amd64.tar.gz -C /usr/local/bin && mv /usr/local/bin/migrate.linux-amd64 /usr/local/bin/migrate
 
