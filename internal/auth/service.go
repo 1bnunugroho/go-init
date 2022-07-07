@@ -51,7 +51,11 @@ type Identity interface {
 	GetID() string
 	// GetEmail returns the user email.
 	GetEmail() string
+	GetUserName() string
+	GetBio() string
+	GetImage() string
 }
+
 
 type service struct {
 	signingKey      string
@@ -191,25 +195,33 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {    // Since we'l
 
 // authenticate authenticates a user using username and password.
 // If username and password are correct, an identity is returned. Otherwise, nil is returned.
-func (s service) authenticate(ctx context.Context, username, password string) Identity {
-	logger := s.logger.With(ctx, "user", username)
+func (s service) authenticate(ctx context.Context, email, password string) Identity {
+	logger := s.logger.With(ctx, "user", email)
 
 	// TODO: the following authentication logic is only for demo purpose
-	if username == "demo" && password == "pass" {
+	if email == "demo@local.host" && password == "pass" {
 		logger.Infof("authentication successful")
 		//return entity.User{ID: "100", Name: "demo"}
-		return entity.User{ID: "100", Email: "demo@local.host"}
+		return entity.User{ID: "100", Email: "demo@local.host", Username:"rootz", Bio:"null", Image:"null"}
 	}
 
-	user, err := s.repo.GetUserName(ctx, username)
+	user, err := s.repo.GetUserName(ctx, email)
 	if err != nil {
-		if username == user.Username {
-			if comparePasswords(user.Password, getPwd(password)) {
-				logger.Infof("authentication successful")
-				return entity.User{ID: user.ID, Email: user.Email}
-			}
-		}
+		logger.Infof("authentication failed ga dapet username", err)
+		return nil
 	}
+
+	if password == user.Password {
+		logger.Infof("dpt user")
+		return entity.User{ID: user.ID, Email: user.Email, Username:user.Username, Bio:user.Bio, Image:user.Image}
+	}
+
+		// if username == user.Username {
+		// 	if comparePasswords(user.Password, getPwd(password)) {
+		// 		logger.Infof("authentication successful")
+		// 		return entity.User{ID: user.ID, Email: user.Email}
+		// 	}
+		// }
 
 	logger.Infof("authentication failed")
 	return nil
@@ -220,6 +232,10 @@ func (s service) generateJWT(identity Identity) (string, error) {
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":   identity.GetID(),
 		"email": identity.GetEmail(),
+		"username": identity.GetUserName(),
+		"bio": identity.GetBio(),
+		"image": identity.GetImage(),
+		"iat": time.Now().Unix(),
 		"exp":  time.Now().Add(time.Duration(s.tokenExpiration) * time.Hour).Unix(),
 	}).SignedString([]byte(s.signingKey))
 }

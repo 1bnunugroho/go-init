@@ -10,6 +10,8 @@ type User struct {
 	Email 		string `json:"email"`
 	Username 	string `json:"username"`
 	Password 	string `json:"password"`
+	Bio  		string `json:"password"`
+	Image 		string `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -31,4 +33,14 @@ func (u User) GetEmail() string {
 // GetUserName returns the user name.
 func (u User) GetUserName() string {
 	return u.Username
+}
+
+// GetUserName returns the user name.
+func (u User) GetBio() string {
+	return "null"
+}
+
+// GetUserName returns the user name.
+func (u User) GetImage() string {
+	return "null"
 }

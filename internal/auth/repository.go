@@ -45,9 +45,10 @@ func (r repository) Get(ctx context.Context, id string) (entity.User, error) {
 }
 
 // Get reads the user with the specified ID from the database.
-func (r repository) GetUserName(ctx context.Context, username string) (entity.User, error) {
+func (r repository) GetUserName(ctx context.Context, email string) (entity.User, error) {
 	var user entity.User
-	err := r.db.With(ctx).Select().Model(username, &user)
+	//err := r.db.With(ctx).Select().Model(email, &user)
+	err := r.db.With(ctx).Select("*").From("uzer").Where(dbx.HashExp{"email": email}).One(&user)
 	return user, err
 }
 
@@ -83,6 +84,7 @@ func (r repository) CountUser(ctx context.Context, username string) (int, error)
 	err := r.db.With(ctx).Select("COUNT(*)").From("uzer").Where(dbx.HashExp{"username": username}).Row(&count)
 	return count, err
 }
+
 // Query retrieves the user records with the specified offset and limit from the database.
 func (r repository) Query(ctx context.Context, offset, limit int) ([]entity.User, error) {
 	var users []entity.User
