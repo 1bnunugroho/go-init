@@ -2,6 +2,7 @@ version: '2.1'
 services:
   server:
     image: server
+    container_name: go-jun
     build:
       context: .
       dockerfile: cmd/server/Dockerfile
@@ -18,6 +19,11 @@ services:
   db:
     image: "postgres:alpine"
     restart: always
+    container_name: postgres
+    volumes:
+      - ./testdata:/testdata
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"

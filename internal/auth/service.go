@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"context"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/dgrijalva/jwt-go"
@@ -93,21 +92,21 @@ func (s service) Register(ctx context.Context, req CreateUserRequest) (string, e
 
 	now := time.Now()
 	logger.Infof("time")
-/*
-	spass := getPwd(req.Password)
-	logger.Infof("spass")
 
-	Password := hashAndSalt(spass)
-	logger.Infof("hashp")
-*/
+	logger.Infof(req.Password)
+	var hashedPassword, err = hashPassword(req.Password)
+	logger.Infof(hashedPassword)
 
-	err := s.repo.Create(ctx, entity.User{
+  	if err != nil {
+    	logger.Infof("Error hashing password")
+    }
+
+	err = s.repo.Create(ctx, entity.User{
 		ID:        	id,
 		Email:      req.Email,
 		Username:	req.Username,
-		//Password:	hashAndSalt(getPwd(req.Password)),
-		Password:	req.Password,
-		//Password:	Password,
+		Password:	hashedPassword,
+		//Password:	req.Password,
 		CreatedAt: 	now,
 		UpdatedAt: 	now,
 	})
@@ -151,46 +150,24 @@ func (s service) Get(ctx context.Context, id string) (User, error) {
 	return User{user}, nil
 }
 
-func getPwd(pwd string) ([]byte) {    // Prompt the user to enter a password
-    //fmt.Println("Enter a password")    // We will use this to store the users input
-    //var pwd string    // Read the users input
-    _, err := fmt.Scan(&pwd)
-    if err != nil {
-        //log.Println(err)
-        //logger.Infof("authentication successful")
-        //return err
-    }    // Return the users input as a byte slice which will save us
-    // from having to do this conversion later on
-    return []byte(pwd)
+// Hash password
+func hashPassword(password string) (string, error) {
+	// Convert password string to byte slice
+	var passwordBytes = []byte(password)
+
+	// Hash password with Bcrypt's min cost
+	hashedPasswordBytes, err := bcrypt.
+		GenerateFromPassword(passwordBytes, bcrypt.MinCost)
+
+	return string(hashedPasswordBytes), err
 }
 
-func hashAndSalt(pwd []byte) string {
-    
-    // Use GenerateFromPassword to hash & salt pwd
-    // MinCost is just an integer constant provided by the bcrypt
-    // package along with DefaultCost & MaxCost. 
-    // The cost can be any value you want provided it isn't lower
-    // than the MinCost (4)
-    hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
-    if err != nil {
-        //log.Println(err)
-        //return err
-    }    // GenerateFromPassword returns a byte slice so we need to
-    // convert the bytes to a string and return it
-    return string(hash)
-}
-
-func comparePasswords(hashedPwd string, plainPwd []byte) bool {    // Since we'll be getting the hashed password from the DB it
-    // will be a string so we'll need to convert it to a byte slice
-    byteHash := []byte(hashedPwd)    
-    err := bcrypt.CompareHashAndPassword(byteHash, plainPwd)
-    if err != nil {
-        //logger.Infof("authentication successful")
-        //return err
-        return false
-    }
-    
-    return true
+// Check if two passwords match using Bcrypt's CompareHashAndPassword
+// which return nil on success and an error on failure.
+func doPasswordsMatch(hashedPassword, currPassword string) bool {
+	err := bcrypt.CompareHashAndPassword(
+		[]byte(hashedPassword), []byte(currPassword))
+	return err == nil
 }
 
 // authenticate authenticates a user using username and password.
@@ -211,7 +188,7 @@ func (s service) authenticate(ctx context.Context, email, password string) Ident
 		return nil
 	}
 
-	if password == user.Password {
+	if doPasswordsMatch(user.Password, password) {
 		logger.Infof("dpt user")
 		return entity.User{ID: user.ID, Email: user.Email, Username:user.Username, Bio:user.Bio, Image:user.Image}
 	}
