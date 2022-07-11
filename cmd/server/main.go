@@ -11,6 +11,7 @@ import (
 	"github.com/go-ozzo/ozzo-routing/v2/cors"
 	_ "github.com/lib/pq"
 	"github.com/qiangxue/go-rest-api/internal/album"
+	"github.com/qiangxue/go-rest-api/internal/profile"
 	"github.com/qiangxue/go-rest-api/internal/auth"
 	"github.com/qiangxue/go-rest-api/internal/config"
 	"github.com/qiangxue/go-rest-api/internal/errors"
@@ -91,7 +92,12 @@ func buildHandler(logger log.Logger, db *dbcontext.DB, cfg *config.Config) http.
 		album.NewService(album.NewRepository(db, logger), logger),
 		authHandler, logger,
 	)
-
+	
+	profile.RegisterHandlers(rg.Group(""),
+		profile.NewService(profile.NewRepository(db, logger), logger),
+		authHandler, logger,
+	)
+	
 	auth.RegisterHandlers(rg.Group(""),
 		auth.NewService(cfg.JWTSigningKey, cfg.JWTExpiration, auth.NewRepository(db, logger), logger),
 		logger,
