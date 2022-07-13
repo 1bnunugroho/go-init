@@ -5,6 +5,9 @@
 [![Code Coverage](https://codecov.io/gh/qiangxue/go-rest-api/branch/master/graph/badge.svg)](https://codecov.io/gh/qiangxue/go-rest-api)
 [![Go Report](https://goreportcard.com/badge/github.com/qiangxue/go-rest-api)](https://goreportcard.com/report/github.com/qiangxue/go-rest-api)
 
+<a href="https://labs.play-with-docker.com?stack=https://raw.githubusercontent.com/bluejedi/go-init/master/docker-compose.yml"><img src="https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png" alt="Try in PWD"></a>
+
+credit : qiang xue [go-rest-api] (http://godoc.org/github.com/qiangxue/go-rest-api)
 This starter kit is designed to get you up and running with a project structure optimized for developing
 RESTful API services in Go. It promotes the best practices that follow the [SOLID principles](https://en.wikipedia.org/wiki/SOLID)
 and [clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). 
