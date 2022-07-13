@@ -2,6 +2,7 @@ version: '3.3'
 services:
   server:
     image: bluejedi/go-jun
+    restart: on-failure
     volumes:
       - /tmp/app:/var/log/app
     ports:
