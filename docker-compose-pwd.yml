@@ -11,7 +11,14 @@ services:
       - APP_ENV=local
       - APP_DSN=postgres://db/go_restful?sslmode=disable&user=postgres&password=postgres
     depends_on:
+      - check-db-started 
+
+  # Wait For Postgres to be joinable
+  check-db-started:
+    image: jwilder/dockerize
+    depends_on:
       - db
+    command: 'dockerize -wait=tcp://db:5432'    
 
   db:
     image: "postgres:alpine"
