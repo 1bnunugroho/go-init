@@ -9,7 +9,27 @@ import (
 )
 
 func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logger log.Logger) {
-	rg.Get("/articles", func(c *routing.Context) error {
+	res := resource{logger}
+
+	rg.Get("/articles", res.geta)
+	rg.Get("/articles/feed", res.geta)
+
+	rg.Get("/tags", func(c *routing.Context) error {
+		var tags []string
+		pages := pagination.NewFromRequest(c.Request, len(tags))
+		
+		tags = []string {"implementations"}
+		pages.Items = tags	
+		return c.Write(pages)
+	})
+}
+
+type resource struct {
+	logger  log.Logger
+}
+
+func (r resource) geta(c *routing.Context) error {
+	//func(c *routing.Context) error {
 		
 		var articles []Article
 
@@ -23,16 +43,7 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 		pages.Items = articles
 
 		return c.Write(pages)
-	})
-
-	rg.Get("/tags", func(c *routing.Context) error {
-		var tags []string
-		pages := pagination.NewFromRequest(c.Request, len(tags))
-		
-		tags = []string {"implementations"}
-		pages.Items = tags	
-		return c.Write(pages)
-	})
+	//}
 }
 
 type Author struct {
