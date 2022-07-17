@@ -7,7 +7,10 @@
 
 <a href="https://labs.play-with-docker.com?stack=https://raw.githubusercontent.com/bluejedi/go-init/master/docker-compose-pwd.yml"><img src="https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png" alt="Try in PWD"></a>
 
-credit : qiang xue [go-rest-api] (http://godoc.org/github.com/qiangxue/go-rest-api)
+credit : 
+- qiang xue [go-rest-api] (http://godoc.org/github.com/qiangxue/go-rest-api)
+- kwasniew hyperapp2 realword (https://github.com/kwasniew/hyperapp2-real-world-example)
+
 This starter kit is designed to get you up and running with a project structure optimized for developing
 RESTful API services in Go. It promotes the best practices that follow the [SOLID principles](https://en.wikipedia.org/wiki/SOLID)
 and [clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). 
@@ -25,6 +28,7 @@ The kit provides the following features right out of the box:
 * Data validation
 * Full test coverage
 * Live reloading during development
+* frontend with hyperapp2
  
 The kit uses the following Go packages which can be easily replaced with your own favorite ones
 since their usages are mostly localized and abstracted. 

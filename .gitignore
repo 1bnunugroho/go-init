@@ -22,3 +22,17 @@ testdata/postgres
 
 # PID file generated to support live reload
 .pid
+
+web_modules
+node_modules
+decision_log.md
+.cache
+dist
+*.log
+recordings
+coverage
+.nyc_output
+.parcel-cache
+.DS_Store
+.idea
+build
