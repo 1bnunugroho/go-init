@@ -33,5 +33,6 @@ COPY --from=build /app/migrations ./migrations/
 COPY --from=build /app/server .
 COPY --from=build /app/cmd/server/entrypoint.sh .
 COPY --from=build /app/config/*.yml ./config/
+COPY --from=build /app/hyperreal/build/ ./hyperreal/build/
 RUN ls -la
 ENTRYPOINT ["./entrypoint.sh"]

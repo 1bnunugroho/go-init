@@ -8,6 +8,7 @@ import (
 	"github.com/go-ozzo/ozzo-dbx"
 	"github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/go-ozzo/ozzo-routing/v2/content"
+	"github.com/go-ozzo/ozzo-routing/v2/file"
 	"github.com/go-ozzo/ozzo-routing/v2/cors"
 	_ "github.com/lib/pq"
 	"github.com/qiangxue/go-rest-api/internal/album"
@@ -105,6 +106,11 @@ func buildHandler(logger log.Logger, db *dbcontext.DB, cfg *config.Config) http.
 		auth.NewService(cfg.JWTSigningKey, cfg.JWTExpiration, auth.NewRepository(db, logger), logger),
 		logger,
 	)
+
+	router.Get("/", file.Content("hyperreal/build/index.html"))
+	router.Get("/*", file.Server(file.PathMap{
+		"/": "/hyperreal/build/",
+	}))
 
 	return router
 }

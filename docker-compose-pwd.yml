@@ -10,6 +10,8 @@ services:
       - APP_DSN=postgres://db/go_restful?sslmode=disable&user=postgres&password=postgres
     depends_on:
       - check-db-started 
+    link:
+      - db
 
   # Wait For Postgres to be joinable
   check-db-started:
