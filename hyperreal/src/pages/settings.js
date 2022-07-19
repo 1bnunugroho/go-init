@@ -1,7 +1,7 @@
-import { html } from "../shared/html.js";
+import html from "hyperlit";
 import { ListErrors } from "./fragments/forms.js";
 import { errorsList } from "./fragments/forms.js";
-import { Http } from "../lib/hyperapp-fx.js";
+import { Http } from "@kwasniew/hyperapp-fx";
 import { API_ROOT } from "../config.js";
 import { UserSuccess, Logout } from "./fragments/user.js";
 import { formFields } from "./fragments/forms.js";
@@ -30,7 +30,7 @@ const UpdateSettings = (user) => {
 
 const SubmitForm = (state) => [
   Submitting(state),
-  [
+  //[
     UpdateSettings({
       image: state.image,
       username: state.username,
@@ -39,7 +39,7 @@ const SubmitForm = (state) => [
       password: state.password,
       token: state.user.token,
     }),
-  ],
+  //],
 ];
 
 export const LoadSettingsPage = (page) => (state) => {
@@ -54,8 +54,7 @@ export const LoadSettingsPage = (page) => (state) => {
 
 // Views
 const SettingsForm = ({ image, username, bio, email, password, inProgress }) => html`
-  
-  <form onsubmit=${(_,event) => {event.preventDefault(); return SubmitForm}}>
+  <form onsubmit=${(_, event) => {event.preventDefault(); return SubmitForm}}>
     <fieldset>
       <fieldset class="form-group">
         <input

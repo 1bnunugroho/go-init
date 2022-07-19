@@ -4,10 +4,22 @@ import (
 	routing "github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/qiangxue/go-rest-api/internal/errors"
 	"github.com/qiangxue/go-rest-api/pkg/log"
-	//"time"
+	"time"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/qiangxue/go-rest-api/internal/entity"
 	"github.com/qiangxue/go-rest-api/pkg/pagination"
 	"net/http"
 )
+
+type Identity interface {
+	// GetID returns the user ID.
+	GetID() string
+	// GetEmail returns the user email.
+	GetEmail() string
+	GetUserName() string
+	GetBio() string
+	GetImage() string
+}
 
 type Author struct {
 	Username	string	`json:"username"`
@@ -33,19 +45,34 @@ type resource struct {
 	logger  log.Logger
 }
 
-type CreateArticleRequest struct {
+type ArticleRequest struct {
 	Title       	string 	`json:"title"`
 	Description 	string 	`json:"description"`
 	Body        	string 	`json:"body"`
 	TagList []string `json:"tagList"`
 }
 
-type UpdateSettingRequest struct {
+type CreateArticleRequest struct {
+	Article       	ArticleRequest 	`json:"article"`
+}
+
+
+type UpdateSetting struct {
 	Email 		string `json:"email"`
 	Username 	string `json:"username"`
 	Password 	string `json:"password"`
-	Bio  		string `json:"password"`
-	Image 		string `json:"password"`
+	Bio  		string `json:"bio"`
+	Image 		string `json:"image"`
+	Token 		string `json:"token"`
+}
+
+type UpdateSettingRequest struct {
+	User 		UpdateSetting `json:"user"`
+}
+
+type UpdateSettingResponse struct {
+	User 		UpdateSetting `json:"user"`
+	Token 		string `json:token`
 }
 
 var articles = []Article {Article{Slug:"Create-a-new-implementation-1", Title:"Create a new implementation", Description:"join the community by creating a new implementation", Body:"Share your knowledge and enpower the community by creating a new implementation", CreatedAt:"2021-11-24T12:11:08.212Z",UpdatedAt:"2021-11-24T12:11:08.212Z",Favorited:false,FavoritesCount:"3065", Author:Author{Username:"Gerome",Bio:"null",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}, TagList:[]string {"implementations"}},
@@ -57,13 +84,19 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 
 	rg.Get("/articles", res.geta)
 	rg.Get("/articles/feed", res.geta)
+
 	rg.Put("/user", func(c *routing.Context) error{
 		var input UpdateSettingRequest
 		if err := c.Read(&input); err != nil {
 			logger.With(c.Request.Context()).Info(err)
 			return errors.BadRequest("")
 		}
-			
+		
+		token, err := generateJWT(entity.User{ID: "100", Email: input.User.Email, Username:input.User.Username, Bio:input.User.Bio, Image:input.User.Image})
+		if err != nil {
+			return err
+		}
+		input.User.Token = token
 		return c.Write(input)
 	})
 
@@ -85,13 +118,13 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 			return errors.BadRequest("")
 		}
 
-		tl := input.TagList[:]
+		tl := input.Article.TagList[:]
 
 		article := Article{
-			Slug: input.Title,
-			Title: input.Title,
-			Description: input.Description,
-			Body: input.Body,
+			Slug: input.Article.Title,
+			Title: input.Article.Title,
+			Description: input.Article.Description,
+			Body: input.Article.Body,
 			TagList: tl,
 			CreatedAt:"2021-11-24T12:11:07.557Z",
 			UpdatedAt:"2021-11-24T12:11:07.557Z",
@@ -111,4 +144,18 @@ func (r resource) geta(c *routing.Context) error {
 		pages.Items = articles
 
 		return c.Write(pages)
+}
+
+// generateJWT generates a JWT that encodes an identity.
+func generateJWT(identity Identity) (string, error) {
+
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":   identity.GetID(),
+		"email": identity.GetEmail(),
+		"username": identity.GetUserName(),
+		"bio": identity.GetBio(),
+		"image": identity.GetImage(),
+		"iat": time.Now().Unix(),
+		"exp":  time.Now().Add(time.Duration(72) * time.Hour).Unix(),
+	}).SignedString([]byte("LxsKJywDL5O5PvgODZhBH12KE6k2yL8E"))
 }

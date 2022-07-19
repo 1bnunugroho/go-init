@@ -1,28 +1,16 @@
-import { html } from "../shared/html.js";
-//import { Http } from "@kwasniew/hyperapp-fx";
-import { Http } from "../lib/hyperapp-fx.js";
+import html from "hyperlit";
+import { Http } from "@kwasniew/hyperapp-fx";
 import { API_ROOT } from "../config.js";
-import { API_ROOT2 } from "../config.js";
 import { LogError } from "./fragments/forms.js";
-import { ArticleList, FetchArticles, loadingArticles, loadingAlbums } from "./fragments/articles.js";
-//import { preventDefault } from "@hyperapp/events";
-//import { preventDefault } from "../lib/events.js";
-//import { eventWith } from "../lib/events.js";
+import { ArticleList, FetchArticles, loadingArticles } from "./fragments/articles.js";
 
 // Actions & Effects
-export const SetTags = (state, { items }) => ({ ...state, tags: items });
-export const SetAlbums = (state, { items }) => ({ ...state, albums:items });
+
+export const SetTags = (state, {items}) => ({ ...state, tags: items });
 
 export const FetchTags = Http({
   url: API_ROOT + "/tags",
   action: SetTags,
-  error: LogError,
-  errorResponse: "json",
-});
-
-export const FetchAlbums = Http({
-  url: API_ROOT + "/albums",
-  action: SetAlbums,
   error: LogError,
   errorResponse: "json",
 });
@@ -64,9 +52,8 @@ const ChangeTab = (state, { activeFeedType, activeFeedName }) => {
     feeds,
     currentPageIndex: 0,
     ...loadingArticles,
-    ...loadingAlbums,
   };
-  return [newState, [FetchFeed(newState)]];
+  return [newState, FetchFeed(newState)];
 };
 
 const ChangePage = (state, { currentPageIndex }) => {
@@ -76,7 +63,7 @@ const ChangePage = (state, { currentPageIndex }) => {
     currentPageIndex,
   };
 
-  return [newState, [FetchFeed(newState)]];
+  return [newState, FetchFeed(newState)];
 };
 
 export const LoadHomePage = (page) => (state) => {
@@ -90,13 +77,10 @@ export const LoadHomePage = (page) => (state) => {
     activeFeedType,
     feeds,
     tags: [],
-    items: [],
     currentPageIndex: 0,
     ...loadingArticles,
-    ...loadingAlbums,
   };
-  return [newState, [FetchFeed(newState), FetchTags, FetchAlbums]];
-  //return [newState, [FetchFeed(newState), FetchAlbums]];
+  return [newState, FetchFeed(newState), FetchTags];
 };
 
 // Views
@@ -126,11 +110,7 @@ const FeedTab = ({ active, type, name }, children) =>
         href=""
         data-test="feed"
         class=${{ "nav-link": true, active }}
-        onclick=${(_, event) => {
-            event.preventDefault() 
-            return [ChangeTab, { activeFeedName: name, activeFeedType: type }]
-          }
-        }
+        onclick=${(_, event) => {event.preventDefault(); return [ChangeTab, { activeFeedName: name, activeFeedType: type }]}}
       >
         ${children}
       </a>
@@ -145,29 +125,9 @@ const Tags = ({ tags }) => html`
           href=""
           data-test="tag"
           class="tag-pill tag-default"
-          onclick=${(_, event) => {
-              event.preventDefault() 
-              return [ChangeTab, { activeFeedType: TAG_FEED, activeFeedName: tag }]
-            }
-          }
+          onclick=${(_, event) => {event.preventDefault(); return [ChangeTab, { activeFeedType: TAG_FEED, activeFeedName: tag }]}}
         >
           ${tag}
-        </a>
-      `;
-    })}
-  </div>
-`;
-
-const Albums = ({ albums }) => html`
-  <div class="tag-list">
-    ${albums.map((album) => {
-      return html`
-        <a
-          href=""
-          data-test="tag"
-          class="tag-pill tag-default"
-        >
-          ${album.name}
         </a>
       `;
     })}
@@ -188,11 +148,7 @@ const ListPagination = ({ pages }) => {
                 <a
                   class="page-link"
                   href=""
-                  onclick=${(_, event) => {
-                      event.preventDefault() 
-                      return [ChangeTab, { currentPageIndex: page.index }]
-                    }
-                  }
+                  onclick=${(_, event) => {event.preventDefault(); ({ currentPageIndex: page.index })}}
                 >
                   ${page.humanDisplay}
                 </a>
@@ -214,8 +170,8 @@ const Banner = () =>
   html`
     <div class="banner">
       <div class="container">
-        <h1 class="logo-font">Skill-Hub</h1>
-        <p>A place to share your skill.</p>
+        <h1 class="logo-font">conduit</h1>
+        <p>A place to share your knowledge.</p>
       </div>
     </div>
   `;
@@ -228,7 +184,6 @@ export const HomePage = ({
   currentPageIndex,
   isLoading,
   tags,
-  albums,
   feeds,
   activeFeedName,
   activeFeedType,
@@ -258,9 +213,6 @@ export const HomePage = ({
               <p>Popular Tags</p>
 
               ${Tags({ tags })}
-              <p>Popular Albums</p>
-
-              ${Albums({ albums })}
             </div>
           </div>
         </div>

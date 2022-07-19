@@ -1,8 +1,8 @@
 import { ListErrors } from "./fragments/forms.js";
 import { formFields } from "./fragments/forms.js";
-import { html } from "../shared/html.js";
+import html from "hyperlit";
 import { errorsList } from "./fragments/forms.js";
-import { Http } from "../lib/hyperapp-fx.js";
+import { Http } from "@kwasniew/hyperapp-fx";
 import { API_ROOT } from "../config.js";
 import { FormError, Submitting } from "./fragments/forms.js";
 import { HOME } from "./links.js";
@@ -28,7 +28,7 @@ const SaveArticle = ({ article, token, method, url }) =>
         "Content-Type": "application/json",
         ...authHeader(token),
       },
-      body: JSON.stringify({ title: article.title, description: article.description, body:article.body, tagList:article.tagList }),
+      body: JSON.stringify({ article }),
     },
     errorResponse: "json",
     action: RedirectAction(HOME),
@@ -37,19 +37,17 @@ const SaveArticle = ({ article, token, method, url }) =>
 
 const SubmitArticle = (state) => [
   Submitting(state),
-  [
-    SaveArticle({
-      article: {
-        title: state.title,
-        description: state.description,
-        body: state.body,
-        tagList: state.tagList,
-      },
-      token: state.user.token,
-      url: API_ROOT + "/articles" + (state.page === NEW_EDITOR ? "" : `/${state.slug}`),
-      method: state.page === NEW_EDITOR ? "POST" : "PUT",
-    }),
-  ],
+  SaveArticle({
+    article: {
+      title: state.title,
+      description: state.description,
+      body: state.body,
+      tagList: state.tagList,
+    },
+    token: state.user.token,
+    url: API_ROOT + "/articles" + (state.page === NEW_EDITOR ? "" : `/${state.slug}`),
+    method: state.page === NEW_EDITOR ? "POST" : "PUT",
+  }),
 ];
 
 export const LoadNewEditorPage = (page) => (state) => ({
@@ -85,8 +83,7 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
                   data-test="title"
                   placeholder="Article Title"
                   value=${title}
-                  
-                  oninput=${(state, event) => ({...state, title: event.target.value})}
+                  oninput=${(state, event)=>({...state, title: event.target.value})}
                 />
               </fieldset>
 
@@ -97,8 +94,7 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
                   data-test="description"
                   placeholder="What's this article about?"
                   value=${description}
-                  
-                  oninput=${(state, event) => ({...state, description: event.target.value})}
+                  oninput=${(state, event)=>({...state, description: event.target.value})}
                 />
               </fieldset>
 
@@ -109,8 +105,7 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
                   data-test="body"
                   placeholder="Write your article (in markdown)"
                   value=${body}
-                  
-                  oninput=${(state, event) => ({...state, body: event.target.value})}
+                  oninput=${(state, event)=>({...state, body: event.target.value})}
                 />
               </fieldset>
 
@@ -121,11 +116,11 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
                   data-test="tags"
                   placeholder="Enter tags"
                   value=${currentTag}
-                  oninput=${(state, event) => ({...state, currentTag: event.target.value})}
                   onkeyup=${(state, event) => {
                     return event.keyCode===13 ? [AddTag, currentTag] : state;
                     event.preventDefault();
                   }}
+                  oninput=${(state, event)=>({...state, currentTag: event.target.value})}
                 />
 
                 <div class="tag-list">
@@ -145,7 +140,6 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
                 class="btn btn-lg pull-xs-right btn-primary"
                 type="button"
                 disabled=${inProgress}
-                
                 onclick=${(_, event) => {event.preventDefault(); return SubmitArticle}}
               >
                 Publish Article

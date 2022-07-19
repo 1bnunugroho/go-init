@@ -1,50 +1,40 @@
-//import { Http } from "@kwasniew/hyperapp-fx";
-import { Http } from "../lib/hyperapp-fx.js";
+import { Http } from "@kwasniew/hyperapp-fx";
 import { API_ROOT } from "../config.js";
-import { html } from "../shared/html.js";
+import html from "hyperlit";
 import { errorsList } from "./fragments/forms.js";
 import { ListErrors } from "./fragments/forms.js";
 import { UserSuccess } from "./fragments/user.js";
 import { formFields } from "./fragments/forms.js";
 import { FormError, Submitting } from "./fragments/forms.js";
 import { REGISTER, LOGIN } from "./links.js";
-//import { preventDefault, targetValue } from "@hyperapp/events";
-import { preventDefault, targetValue } from "../lib/events.js";
 
 // Actions & Effects
-const ChangeUsername = (state, username) => ({ ...state, username });
-const ChangeEmail = (state, email) => ({ ...state, email });
-const ChangePassword = (state, password) => ({ ...state, password });
 
 const Login = ({ email, password }) =>
   Http({
-    //url: API_ROOT + "/users/login",
-    url: API_ROOT + "/login",
+    url: API_ROOT + "/users/login",
     options: {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      //body: JSON.stringify({ user: { email, password } }),
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ user: { email, password } }),
     },
     errorResponse: "json",
     action: UserSuccess,
     error: FormError,
   });
-const SubmitLogin = (state) => [Submitting(state), [Login({ email: state.email, password: state.password })]];
+const SubmitLogin = (state) => [Submitting(state), Login({ email: state.email, password: state.password })];
 
 const Register = ({ email, password, username }) =>
   Http({
-    //url: API_ROOT + "/users",
-    url: API_ROOT + "/register",
+    url: API_ROOT + "/users",
     options: {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      //body: JSON.stringify({ user: { email, password, username } }),
-      body: JSON.stringify({ email, password, username }),
+      body: JSON.stringify({ user: { email, password, username } }),
     },
     errorResponse: "json",
     action: UserSuccess,
@@ -52,13 +42,11 @@ const Register = ({ email, password, username }) =>
   });
 const SubmitRegister = (state) => [
   { ...state, inProgress: true },
-  [
-    Register({
-      email: state.email,
-      password: state.password,
-      username: state.username,
-    }),
-  ],
+  Register({
+    email: state.email,
+    password: state.password,
+    username: state.username,
+  }),
 ];
 
 const defaultAuthFields = {
@@ -97,7 +85,7 @@ export const LoginPage = ({ email, password, inProgress, errors }) => html`
 
           ${ListErrors({ errors: errorsList({ errors }) })}
 
-          <form onsubmit=${preventDefault(SubmitLogin)}>
+          <form onsubmit=${(_, event) => {event.preventDefault(); return SubmitLogin}}>
             <fieldset>
               <fieldset class="form-group">
                 <input
@@ -106,7 +94,7 @@ export const LoginPage = ({ email, password, inProgress, errors }) => html`
                   type="email"
                   placeholder="Email"
                   value=${email}
-                  oninput=${[ChangeEmail, targetValue]}
+                  oninput=${(state, event) => ({...state, email: event.target.value})}
                 />
               </fieldset>
 
@@ -117,7 +105,7 @@ export const LoginPage = ({ email, password, inProgress, errors }) => html`
                   data-test="password"
                   placeholder="Password"
                   value=${password}
-                  oninput=${[ChangePassword, targetValue]}
+                  oninput=${(state, event) => ({...state, password: event.target.value})}
                 />
               </fieldset>
 
@@ -144,7 +132,7 @@ export const RegisterPage = ({ username, password, email, inProgress, errors }) 
 
           ${ListErrors({ errors: errorsList({ errors }) })}
 
-          <form onsubmit=${preventDefault(SubmitRegister)}>
+          <form onsubmit=${(_, event) => {event.preventDefault(); return SubmitRegister}}>
             <fieldset>
               <fieldset class="form-group">
                 <input
@@ -153,7 +141,7 @@ export const RegisterPage = ({ username, password, email, inProgress, errors }) 
                   data-test="username"
                   placeholder="Username"
                   value=${username}
-                  oninput=${[ChangeUsername, targetValue]}
+                  oninput=${(state, event) => ({...state, username: event.target.value})}
                 />
               </fieldset>
 
@@ -164,7 +152,7 @@ export const RegisterPage = ({ username, password, email, inProgress, errors }) 
                   data-test="email"
                   placeholder="Email"
                   value=${email}
-                  oninput=${[ChangeEmail, targetValue]}
+                  oninput=${(state, event) => ({...state, email: event.target.value})}
                 />
               </fieldset>
 
@@ -175,7 +163,7 @@ export const RegisterPage = ({ username, password, email, inProgress, errors }) 
                   data-test="password"
                   placeholder="Password"
                   value=${password}
-                  oninput=${[ChangePassword, targetValue]}
+                  oninput=${(state, event) => ({...state, password: event.target.value})}
                 />
               </fieldset>
 

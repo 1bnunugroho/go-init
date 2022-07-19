@@ -1,5 +1,4 @@
-//import { ReadFromStorage, RemoveFromStorage, WriteToStorage } from "@kwasniew/hyperapp-fx";
-import { ReadFromStorage, RemoveFromStorage, WriteToStorage } from "../../lib/hyperapp-fx.js";
+import { ReadFromStorage, RemoveFromStorage, WriteToStorage } from "@kwasniew/hyperapp-fx";
 import { Redirect } from "../../lib/router.js";
 import { HOME } from "../links.js";
 
@@ -24,16 +23,15 @@ const genUser = (token) => {
   return user;
 }
 
-
 const SetUser = (state, { value }) => (value ? { ...state, user: value } : state);
 
 const SaveUser = (user) => WriteToStorage({ key: SESSION, value: user });
 
 export const ReadUser = ReadFromStorage({ key: SESSION, action: SetUser });
 
-export const UserSuccess = (state, { token }) => [{ ...state, user: genUser(token) }, [SaveUser(genUser(token)), Redirect({ path: HOME })]];
+export const UserSuccess = (state, { token }) => [{ ...state, user: genUser(token) }, SaveUser(genUser(token)), Redirect({ path: HOME })];
 
 export const Logout = (state) => [
   { ...state, user: {} },
-  [RemoveFromStorage({ key: SESSION }), Redirect({ path: HOME })],
+  RemoveFromStorage({ key: SESSION }), Redirect({ path: HOME }),
 ];

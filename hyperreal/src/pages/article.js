@@ -1,16 +1,12 @@
-import { html } from "../shared/html.js";
+import html from "hyperlit";
 import markdown from "snarkdown";
-//import { Http } from "@kwasniew/hyperapp-fx";
-import { Http } from "../lib/hyperapp-fx.js";
+import { Http } from "@kwasniew/hyperapp-fx";
 import { API_ROOT } from "../config.js";
 import { authHeader } from "../shared/authHeader.js";
 import { profile, editor, HOME, LOGIN, REGISTER } from "./links.js";
 import { format } from "../shared/date.js";
 import { LogError } from "./fragments/forms.js";
 import { RedirectAction } from "../lib/router.js";
-import { ChangeFieldFromTarget } from "./fragments/forms.js";
-//import { preventDefault } from "@hyperapp/events";
-import { preventDefault } from "../lib/events.js";
 import { FetchArticle } from "./fragments/article.js";
 
 // Actions & Effects
@@ -42,21 +38,19 @@ const AddComment = (state, { comment }) => ({
 
 const SubmitComment = (state) => [
   state,
-  [
-    Http({
-      url: API_ROOT + "/articles/" + state.slug + "/comments",
-      options: {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...authHeader(state.user.token),
-        },
-        body: JSON.stringify({ comment: { body: state.commentText } }),
+  Http({
+    url: API_ROOT + "/articles/" + state.slug + "/comments",
+    options: {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeader(state.user.token),
       },
-      action: AddComment,
-      error: LogError,
-    }),
-  ],
+      body: JSON.stringify({ comment: { body: state.commentText } }),
+    },
+    action: AddComment,
+    error: LogError,
+  }),
 ];
 
 const DeleteArticle = ({ slug, token }) =>
@@ -93,7 +87,7 @@ export const LoadArticlePage = (page) => (state, { slug }) => {
   };
   return [
     newState,
-    [FetchArticle({ slug, token: state.user.token }), FetchComments({ slug, token: state.user.token })],
+    FetchArticle({ slug, token: state.user.token }), FetchComments({ slug, token: state.user.token }),
   ];
 };
 
@@ -146,14 +140,14 @@ const ArticleBanner = ({ state }) =>
   `;
 
 const CommentInput = ({ state }) => html`
-  <form class="card comment-form" onsubmit=${preventDefault(SubmitComment)}>
+  <form class="card comment-form" onsubmit=${(_, event) => {event.preventDefault(); return SubmitComment}}>
     <div class="card-block">
       <textarea
         class="form-control"
         placeholder="Write a comment..."
         data-test="commentInput"
         value=${state.commentText}
-        oninput=${ChangeFieldFromTarget("commentText")}
+        oninput=${(state, event) => ({...state, commentText: event.target.value})}
         rows="3"
       />
     </div>

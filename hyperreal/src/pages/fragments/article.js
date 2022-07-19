@@ -1,7 +1,5 @@
-//import { Http } from "@kwasniew/hyperapp-fx";
-import { Http } from "../../lib/hyperapp-fx.js";
+import { Http } from "@kwasniew/hyperapp-fx";
 import { API_ROOT } from "../../config.js";
-import { API_ROOT2 } from "../../config.js";
 import { authHeader } from "../../shared/authHeader.js";
 import { LogError } from "./forms.js";
 

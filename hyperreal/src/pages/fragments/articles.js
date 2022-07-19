@@ -1,10 +1,8 @@
-import { html } from "../../shared/html.js";
+import html from "hyperlit";
 import { article as articleLink } from "../links.js";
 import { format } from "../../shared/date.js";
-//import { Http } from "@kwasniew/hyperapp-fx";
-import { Http } from "../../lib/hyperapp-fx.js";
+import { Http } from "@kwasniew/hyperapp-fx";
 import { API_ROOT } from "../../config.js";
-import { API_ROOT2 } from "../../config.js";
 import { authHeader } from "../../shared/authHeader.js";
 import { LogError } from "./forms.js";
 import { profile } from "../links.js";
@@ -17,7 +15,7 @@ const UpdateArticle = (state, { article }) => ({
 
 const Favorite = (method) => ({ slug, token }) =>
   Http({
-    url: API_ROOT + `/articles/${slug}/favorite/`,
+    url: API_ROOT + `/articles/${slug}/favorite`,
     options: {
       method,
       headers: authHeader(token),
@@ -43,12 +41,6 @@ const ChangeFavoriteStatus = (state, slug) => {
 export const loadingArticles = {
   articles: [],
   articlesCount: 0,
-  isLoading: true,
-};
-
-export const loadingAlbums = {
-  albums: [],
-  albumsCount: 0,
   isLoading: true,
 };
 
