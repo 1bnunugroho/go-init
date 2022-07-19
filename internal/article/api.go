@@ -56,6 +56,9 @@ type CreateArticleRequest struct {
 	Article       	ArticleRequest 	`json:"article"`
 }
 
+type CreateArticleResponse struct {
+	Article       	Article 	`json:"article"`
+}
 
 type UpdateSetting struct {
 	Email 		string `json:"email"`
@@ -75,15 +78,27 @@ type UpdateSettingResponse struct {
 	Token 		string `json:token`
 }
 
-var articles = []Article {Article{Slug:"Create-a-new-implementation-1", Title:"Create a new implementation", Description:"join the community by creating a new implementation", Body:"Share your knowledge and enpower the community by creating a new implementation", CreatedAt:"2021-11-24T12:11:08.212Z",UpdatedAt:"2021-11-24T12:11:08.212Z",Favorited:false,FavoritesCount:"3065", Author:Author{Username:"Gerome",Bio:"null",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}, TagList:[]string {"implementations"}},
+type Comment struct {
+	Id string `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+	Body string `json:"body"`
+	Author Author `json:"author"`
+}
+
+var articles = []Article {Article{Slug:"Create-a-new-implementation-1", Title:"Create a new implementation", Description:"join the community by creating a new implementation", Body:"Share your knowledge and enpower the community by creating a new implementation", CreatedAt:"2021-11-24T12:11:08.212Z",UpdatedAt:"2021-11-24T12:11:08.212Z",Favorited:false,FavoritesCount:"3065", Author:Author{Username:"rootz",Bio:"null",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}, TagList:[]string {"implementations"}},
 	Article{Slug:"Explore-implementations-1",Title:"Explore implementations",Description:"discover the implementations created by the RealWorld community",Body:"Over 100 implementations have been created using various languages, libraries, and frameworks.\n\nExplore them on CodebaseShow.",TagList:[]string {"codebaseShow","implementations"},CreatedAt:"2021-11-24T12:11:07.952Z",UpdatedAt:"2021-11-24T12:11:07.952Z",Favorited:false,FavoritesCount:"1787", Author:Author{Username:"Gerome",Bio:"null",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}},
 	Article{Slug:"Welcome-to-RealWorld-project-1",Title:"Welcome to RealWorld project",Description:"Exemplary fullstack Medium.com clone powered by React, Angular, Node, Django, and many more",Body:"See how the exact same Medium.com clone (called Conduit) is built using different frontends and backends. Yes, you can mix and match them, because they all adhere to the same API spec",TagList:[]string {"welcome","introduction"},CreatedAt:"2021-11-24T12:11:07.557Z",UpdatedAt:"2021-11-24T12:11:07.557Z",Favorited:false,FavoritesCount:"1262",Author:Author{Username:"Gerome",Bio:"null",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}}}
+var comments = []Comment {Comment{Id:"5",CreatedAt:"2021-11-24T12:11:08.480Z",UpdatedAt:"2021-11-24T12:11:08.480Z",Body:"If someone else has started working on an implementation, consider jumping in and helping them! by contacting the author.",Author:Author{Username:"rootz",Bio:"nil",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}},
+Comment{Id:"4",CreatedAt:"2021-11-24T12:11:08.340Z",UpdatedAt:"2021-11-24T12:11:08.340Z",Body:"Before starting a new implementation, please check if there is any work in progress for the stack you want to work on.",Author:Author{Username:"Gerome",Bio:"null",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}}}
 
 func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logger log.Logger) {
 	res := resource{logger}
 
 	rg.Get("/articles", res.geta)
 	rg.Get("/articles/feed", res.geta)
+	rg.Get(`/articles/<slug>`, res.gets)
+	rg.Get(`/articles/<slug>/comments`, res.getc)
 
 	rg.Put("/user", func(c *routing.Context) error{
 		var input UpdateSettingRequest
@@ -144,6 +159,20 @@ func (r resource) geta(c *routing.Context) error {
 		pages.Items = articles
 
 		return c.Write(pages)
+}
+
+func (r resource) gets(c *routing.Context) error {
+
+		//return c.Write("update user " + c.Param("slug"))
+		article := CreateArticleResponse{Article:articles[0]}
+
+		return c.Write(article)
+}
+
+func (r resource) getc(c *routing.Context) error {
+	pages := pagination.NewFromRequest(c.Request, len(articles))
+	pages.Items = comments
+	return c.Write(pages)
 }
 
 // generateJWT generates a JWT that encodes an identity.

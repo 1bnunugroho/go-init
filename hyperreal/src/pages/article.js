@@ -63,7 +63,7 @@ const DeleteArticle = ({ slug, token }) =>
 
 const SubmitDeleteArticle = (state) => [{ ...state }, DeleteArticle({ slug: state.slug, token: state.user.token })];
 
-const SetComments = (state, { comments }) => ({ ...state, comments });
+const SetComments = (state, { items }) => ({ ...state, comments: items });
 
 const FetchComments = ({ slug, token }) => {
   return Http({
