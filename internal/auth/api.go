@@ -11,7 +11,7 @@ import (
 func RegisterHandlers(rg *routing.RouteGroup, service Service, logger log.Logger) {
 	rg.Post("/login", login(service, logger))
 	rg.Post("/users/login", login(service, logger))
-	rg.Post("/register", register(service, logger))
+	rg.Post("/users", register(service, logger))
 	rg.Get("/users", query(service, logger))
 }
 
@@ -48,20 +48,35 @@ func login(service Service, logger log.Logger) routing.Handler {
 func register(service Service, logger log.Logger) routing.Handler {
 	return func(c *routing.Context) error {
 
-		var input CreateUserRequest
+		type Userreq struct {
+			Email string `json:"email"`
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
+
+		var input struct {
+			User Userreq `json:"user"`
+		}
+
+		//var input = userreq {}
+		//tl := input.[:]
+		
+		//var input CreateUserRequest
+		//var input = map[string]interface{}
 
 		if err := c.Read(&input); err != nil {
 			logger.With(c.Request.Context()).Errorf("invalid request: %v", err)
 			return errors.BadRequest("")
 		}
 
-		id, err := service.Register(c.Request.Context(), input)
+		token, err := service.Register(c.Request.Context(), CreateUserRequest{input.User.Email, input.User.Username, input.User.Password})
 		if err != nil {
 			return err
 		}
+
 		return c.Write(struct {
-			ID string `json:"id"`
-		}{id})
+			Token string `json:"token"`
+		}{token})
 	}
 }
 

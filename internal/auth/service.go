@@ -80,6 +80,7 @@ func (s service) Login(ctx context.Context, username, password string) (string, 
 // Register register a user.
 // Otherwise, an error is returned.
 func (s service) Register(ctx context.Context, req CreateUserRequest) (string, error) {
+	//func (s service) Register(ctx context.Context, username, password, email string) (string, error) {
 	logger := s.logger.With(ctx, "req", req)
 	if err := req.Validate(); err != nil {
 		return "", err
@@ -118,9 +119,13 @@ func (s service) Register(ctx context.Context, req CreateUserRequest) (string, e
 	}
 
 	//if err != nil {
-		logger.Infof("harusnya sukses")
-		return id, nil
+	//	logger.Infof("harusnya sukses")
+	//	return id, nil
 	//}
+	if identity := s.authenticate(ctx, req.Email, req.Password); identity != nil {
+		return s.generateJWT(identity)
+	}
+	return "", errors.Unauthorized("")
 }
 
 // Count returns the number of users.
@@ -189,6 +194,7 @@ func (s service) authenticate(ctx context.Context, email, password string) Ident
 	}
 
 	if doPasswordsMatch(user.Password, password) {
+		logger.Infof(`dpt user user.Password , password`)
 		logger.Infof("dpt user")
 		return entity.User{ID: user.ID, Email: user.Email, Username:user.Username, Bio:user.Bio, Image:user.Image}
 	}

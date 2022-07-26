@@ -165,6 +165,7 @@ function httpEffect(dispatch, props) {
     })
     .catch(function(error) {
       if (props.errorResponse) {
+        console.log(props.errorResponse);
         return error[props.errorResponse]()
           .then(function(result) {
             dispatch(props.error, result);
