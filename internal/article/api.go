@@ -111,8 +111,11 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 		if err != nil {
 			return err
 		}
-		input.User.Token = token
-		return c.Write(input)
+		//input.User.Token = token
+		//return c.Write(input)
+		return c.Write(struct {
+			Token string `json:"token"`
+		}{token})
 	})
 
 	rg.Get("/tags", func(c *routing.Context) error {
