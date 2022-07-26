@@ -9,6 +9,7 @@ import (
 	"github.com/qiangxue/go-rest-api/internal/entity"
 	"github.com/qiangxue/go-rest-api/pkg/pagination"
 	"net/http"
+	"encoding/json"
 )
 
 type Identity interface {
@@ -154,6 +155,28 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 
 		return c.WriteWithStatus(article, http.StatusCreated)
 	})
+
+	rg.Get(`/profiles/<username>`, func(c *routing.Context) error {
+
+		profile := `{
+				  "profile": {
+				    "username": "jake",
+				    "bio": "I work at statefarm",
+				    "image": "https://api.realworld.io/images/demo-avatar.png",
+				    "following": false
+				  }
+				}`
+
+		jsonMap := make(map[string]interface{})
+		err := json.Unmarshal([]byte(profile), &jsonMap)
+		if err != nil {
+			panic(err)
+		}
+
+		return c.Write(jsonMap)
+	})
+
+
 }
 
 func (r resource) geta(c *routing.Context) error {
