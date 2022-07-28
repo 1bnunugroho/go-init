@@ -170,8 +170,8 @@ const Banner = () =>
   html`
     <div class="banner">
       <div class="container">
-        <h1 class="logo-font">conduit</h1>
-        <p>A place to share your knowledge.</p>
+        <h1 class="logo-font">Skill Hub</h1>
+        <p>A place to share your Skill.</p>
       </div>
     </div>
   `;

@@ -30,7 +30,7 @@ const Header = ({ page, user }) =>
     <nav class="navbar navbar-light">
       <div class="container">
         <a class="navbar-brand" href=${HOME}>
-          conduit
+          Skill Hub
         </a>
         <ul class="nav navbar-nav pull-xs-right">
         ${NavItem({ page, path: HOME }, "Home")}
