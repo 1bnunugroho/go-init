@@ -113,26 +113,30 @@ const ArticleActions = ({ state }) => {
 };
 
 const ArticleMeta = ({ state }) => html`
-  <div class="article-meta">
-    <a href=${profile(state.author.username)}>
-      <img data-test="avatar" src=${state.author.image} />
-    </a>
-
-    <div class="info">
-      <a data-test="author" href=${profile(state.author.username)} class="author">
-        ${state.author.username}
+  <div class="container grid-lg text-left">
+    <div class="tile tile-centered article-meta">
+      <div class="tile-icon">
+      <a class="avatar" href=${profile(state.author.username)}>
+        <img data-test="avatar" src=${state.author.image} />
       </a>
-      <span data-test="date" class="date">${format(state.createdAt)}</span>
+      </div>
+      <div class="tile-content">
+        <div class="tile-title">
+        <a data-test="author" class="tile-title author" href=${profile(state.author.username)}>
+          ${state.author.username}
+        </a></div>
+        <div data-test="date" class="tile-subtitle text-gray text-tiny date">${format(state.createdAt)}</div>
+      </div>
+      ${ArticleActions({ state })}
     </div>
-
-    ${ArticleActions({ state })}
-  </div>
+  </div>  
+    
 `;
 
 const ArticleBanner = ({ state }) =>
   html`
-    <div class="banner">
-      <div class="container">
+    <div class="hero text-center bg-gray">
+      <div class="hero-body">
         <h1 data-test="title">${state.title}</h1>
         ${ArticleMeta({ state })}
       </div>
@@ -143,7 +147,7 @@ const CommentInput = ({ state }) => html`
   <form class="card comment-form" onsubmit=${(_, event) => {event.preventDefault(); return SubmitComment}}>
     <div class="card-block">
       <textarea
-        class="form-control"
+        class="form-input input-lg"
         placeholder="Write a comment..."
         data-test="commentInput"
         value=${state.commentText}
@@ -176,18 +180,18 @@ const DeleteButton = ({ comment, user }) => {
 const Comment = ({ comment, slug, user }) =>
   html`
     <div class="card" data-test="comment">
-      <div class="card-block">
+      <div class="card-body">
         <p data-test="commentText" class="card-text">${comment.body}</p>
       </div>
       <div class="card-footer">
-        <a data-test="commentAuthor" href=${profile(comment.author.username)} class="comment-author">
+        <a data-test="commentAuthor" href=${profile(comment.author.username)} class="avatar comment-author">
           <img src=${comment.author.image} class="comment-author-img" alt=${comment.author.username} />
         </a>
         ${" "}
-        <a href=${profile(comment.author.username)} class="comment-author">
+        <a href=${profile(comment.author.username)} class="text-gray comment-author">
           ${comment.author.username}
         </a>
-        <span class="date-posted">${format(comment.createdAt)}</span>
+        <span class="text-tiny date-posted">${format(comment.createdAt)}</span>
         ${DeleteButton({ comment, slug, user })}
       </div>
     </div>
@@ -228,10 +232,10 @@ const CommentContainer = ({ state }) => html`
 export const ArticlePage = (state) =>
   state.title
     ? html`
-        <div class="article-page">
+        <div class="article-page container">
           ${ArticleBanner({ state })}
-
-          <div class="container page">
+          <p></p>
+          <div class="container grid-lg page">
             <div class="row article-content">
               <div class="col-xs-12">
                 <div data-test="markdown" innerHTML=${markdown(state.body)} />
@@ -239,7 +243,7 @@ export const ArticlePage = (state) =>
                 <ul class="tag-list">
                   ${state.tagList.map(
                     (tag) => html`
-                      <li data-test="tag" class="tag-default tag-pill tag-outline">
+                      <li data-test="tag" class="chip tag-default tag-pill tag-outline">
                         ${tag}
                       </li>
                     `

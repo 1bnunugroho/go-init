@@ -105,7 +105,7 @@ const uiFeeds = {
 
 const FeedTab = ({ active, type, name }, children) =>
   html`
-    <li class="nav-item">
+    <li class="tab-item">
       <a
         href=""
         data-test="feed"
@@ -124,7 +124,7 @@ const Tags = ({ tags }) => html`
         <a
           href=""
           data-test="tag"
-          class="tag-pill tag-default"
+          class="chip tag-pill tag-default"
           onclick=${(_, event) => {event.preventDefault(); return [ChangeTab, { activeFeedType: TAG_FEED, activeFeedName: tag }]}}
         >
           ${tag}
@@ -168,8 +168,8 @@ const pages = ({ count, currentPageIndex }) =>
 
 const Banner = () =>
   html`
-    <div class="banner">
-      <div class="container">
+    <div class="hero bg-gray text-center">
+      <div class="hero-body">
         <h1 class="logo-font">Skill Hub</h1>
         <p>A place to share your Skill.</p>
       </div>
@@ -191,15 +191,16 @@ export const HomePage = ({
   html`
     <div class="home-page" key="home-page">
       ${user.username ? "" : Banner()}
-
-      <div class="container page">
-        <div class="row">
-          <div class="col-md-9">
+      <p></p>
+      <div class="container grid-lg page">
+        <div class="columns">
+          <div class="column col-9">
             <div class="feed-toggle">
-              <ul data-test="feeds" class="nav nav-pills outline-active">
+              <ul data-test="feeds" class="tab">
                 ${feeds.map((name) => uiFeeds[name]({ activeFeedType, activeFeedName }))}
               </ul>
             </div>
+            <p></p>
             ${ArticleList(
               { articles, isLoading },
               ListPagination({
@@ -208,8 +209,8 @@ export const HomePage = ({
             )}
           </div>
 
-          <div class="col-md-3">
-            <div class="sidebar">
+          <div class="column col-3">
+            <div class="container bg-gray">
               <p>Popular Tags</p>
 
               ${Tags({ tags })}

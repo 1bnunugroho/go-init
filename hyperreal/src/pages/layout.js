@@ -4,11 +4,11 @@ import { HOME, LOGIN, NEW_EDITOR, REGISTER, SETTINGS, profile } from "./links.js
 
 // Views
 const NavItem = ({ page, path }, children) => html`
-  <li class="nav-item">
-    <a href="${path}" class=${{ "nav-link": true, active: page === path }}>
+  
+    <a href="${path}" class=${{ "btn btn-link": true, active: page === path }}>
       ${children}
     </a>
-  </li>
+  
 `;
 
 const UserImage = ({ user }) => html` <img src="${user.image}" class="user-pic" alt="${user.username}" /> `;
@@ -27,12 +27,14 @@ const P404Page = ({state}) => html`
 
 const Header = ({ page, user }) =>
   html`
-    <nav class="navbar navbar-light">
-      <div class="container">
-        <a class="navbar-brand" href=${HOME}>
+    <header class="navbar container grid-lg">
+    
+      <section class="navbar-section">
+        <a class="navbar-brand mr-2" href=${HOME}>
           Skill Hub
         </a>
-        <ul class="nav navbar-nav pull-xs-right">
+      </section>
+      <section class="navbar-section">
         ${NavItem({ page, path: HOME }, "Home")}
         ${user.token && NavItem({ page, path: NEW_EDITOR }, html` <i class="ion-compose" /> New Post `)}
         ${user.token ? 
@@ -41,9 +43,9 @@ const Header = ({ page, user }) =>
         ${user.token ? 
           NavItem({ page, path: profile(user.username) }, UserLink({ user })) 
           : NavItem({ page, path: REGISTER }, "Sign up")}
-        </ul>
-      </div>
-    </nav>
+      </section>
+    
+    </header>
   `;
 
 export const view = (state) => html`

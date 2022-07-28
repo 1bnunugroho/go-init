@@ -81,8 +81,8 @@ const EditProfileSettings = () => html`
 
 const Tabs = ({ username, activeFeedType }) =>
   html`
-    <ul class="nav nav-pills outline-active">
-      <li class="nav-item">
+    <ul class="tab text-left nav-pills outline-active">
+      <li class="tab-item">
         <a
           data-test="feed"
           class=${activeFeedType === AUTHOR_FEED ? "nav-link active" : "nav-link"}
@@ -92,7 +92,7 @@ const Tabs = ({ username, activeFeedType }) =>
         </a>
       </li>
 
-      <li class="nav-item">
+      <li class="tab-item">
         <a
           data-test="feed"
           class=${activeFeedType === FAVORITED_FEED ? "nav-link active" : "nav-link"}
@@ -110,14 +110,12 @@ const isOwnProfile = ({ user, profile }) => user.username === profile.username;
 export const ProfilePage = ({ user, profile, activeFeedType, articles, isLoading }) => html`
   <div class="profile-page">
     <div>
-      <div class="user-info">
-        <div class="container">
-          <div class="row">
-            <div class="col-xs-12 col-md-10 offset-md-1">
+      <div class="hero bg-gray text-center">
+        <div class="hero-body">
               ${profile.image
-                ? html` <img data-test="avatar" class="user-img" src=${profile.image} alt=${profile.username} /> `
+                ? html` <img data-test="avatar" class="avatar avatar-xl user-img" src=${profile.image} alt=${profile.username} /> `
                 : ""}
-              <h4 data-test="username">${profile.username}</h4>
+              <h1 data-test="username">${profile.username}</h1>
               <p data-test="bio">${profile.bio}</p>
 
               ${isLoggedIn({ user })
@@ -128,16 +126,15 @@ export const ProfilePage = ({ user, profile, activeFeedType, articles, isLoading
                       following: profile.following,
                     })
                 : ""}
-            </div>
-          </div>
         </div>
       </div>
-      <div class="container">
+      <div class="container grid-lg">
         <div class="row">
           <div class="col-xs-12 col-md-10 offset-md-1">
             <div class="articles-toggle">
               ${Tabs({ username: profile.username, activeFeedType })}
             </div>
+            <p></p>
             ${ArticleList({ articles, isLoading })}
           </div>
         </div>

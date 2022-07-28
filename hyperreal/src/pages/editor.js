@@ -69,7 +69,7 @@ export const LoadEditorPage = (page) => (state, { slug }) => {
 // Views
 export const EditorPage = ({ title, description, body, currentTag, tagList, errors, inProgress }) => html`
   <div class="editor-page">
-    <div class="container page">
+    <div class="container grid-lg text-center page">
       <div class="row">
         <div class="col-md-10 offset-md-1 col-xs-12">
           ${ListErrors({ errors: errorsList({ errors }) })}
@@ -78,7 +78,7 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
             <fieldset>
               <fieldset class="form-group">
                 <input
-                  class="form-control form-control-lg"
+                  class="form-input input-lg"
                   type="text"
                   data-test="title"
                   placeholder="Article Title"
@@ -89,7 +89,7 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
 
               <fieldset class="form-group">
                 <input
-                  class="form-control"
+                  class="form-input input-lg"
                   type="text"
                   data-test="description"
                   placeholder="What's this article about?"
@@ -100,7 +100,7 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
 
               <fieldset class="form-group">
                 <textarea
-                  class="form-control"
+                  class="form-input input-lg"
                   rows="8"
                   data-test="body"
                   placeholder="Write your article (in markdown)"
@@ -111,7 +111,7 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
 
               <fieldset class="form-group">
                 <input
-                  class="form-control"
+                  class="form-input input-lg"
                   type="text"
                   data-test="tags"
                   placeholder="Enter tags"

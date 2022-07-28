@@ -58,7 +58,7 @@ const SettingsForm = ({ image, username, bio, email, password, inProgress }) => 
     <fieldset>
       <fieldset class="form-group">
         <input
-          class="form-control"
+          class="form-input input-lg"
           type="text"
           data-test="image"
           placeholder="URL of profile picture"
@@ -69,7 +69,7 @@ const SettingsForm = ({ image, username, bio, email, password, inProgress }) => 
 
       <fieldset class="form-group">
         <input
-          class="form-control form-control-lg"
+          class="form-input input-lg"
           type="text"
           data-test="username"
           placeholder="Username"
@@ -80,7 +80,7 @@ const SettingsForm = ({ image, username, bio, email, password, inProgress }) => 
 
       <fieldset class="form-group">
         <textarea
-          class="form-control form-control-lg"
+          class="form-input input-lg"
           rows="8"
           data-test="bio"
           placeholder="Short bio about you"
@@ -91,7 +91,7 @@ const SettingsForm = ({ image, username, bio, email, password, inProgress }) => 
 
       <fieldset class="form-group">
         <input
-          class="form-control form-control-lg"
+          class="form-input input-lg"
           type="email"
           data-test="email"
           placeholder="Email"
@@ -102,7 +102,7 @@ const SettingsForm = ({ image, username, bio, email, password, inProgress }) => 
 
       <fieldset class="form-group">
         <input
-          class="form-control form-control-lg"
+          class="form-input input-lg"
           type="password"
           data-test="password"
           placeholder="New Password"
@@ -120,7 +120,7 @@ const SettingsForm = ({ image, username, bio, email, password, inProgress }) => 
 
 export const SettingsPage = ({ image, username, bio, email, password, inProgress, errors }) => html`
   <div class="settings-page">
-    <div class="container page">
+    <div class="container grid-lg text-center page">
       <div class="row">
         <div class="col-md-6 offset-md-3 col-xs-12">
           <h1 class="text-xs-center">Your Settings</h1>

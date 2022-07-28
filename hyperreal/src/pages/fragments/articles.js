@@ -77,33 +77,40 @@ const FavoriteButton = ({ article }) => {
 
 const ArticlePreview = ({ article }) => html`
   <div data-test="article" class="article-preview">
-    <div class="article-meta">
-      <a href=${profile(article.author.username)}>
+    <div class="tile tile-centered article-meta">
+      <div class="tile-icon">
+      <a class="avatar" href=${profile(article.author.username)}>
         <img data-test="avatar" src=${article.author.image} />
       </a>
-      <div class="info">
-        <a data-test="author" class="author" href=${profile(article.author.username)}>
+      </div>
+      <div class="tile-content">
+        <div class="tile-title">
+        <a data-test="author" class="tile-title author" href=${profile(article.author.username)}>
           ${article.author.username}
-        </a>
-        <span data-test="date" class="date">${format(article.createdAt)}</span>
+        </a></div>
+        <div data-test="date" class="tile-subtitle text-gray text-tiny date">${format(article.createdAt)}</div>
       </div>
       ${FavoriteButton({ article })}
     </div>
+    <div class="tile-action">
     <a href=${articleLink(article.slug)} class="preview-link">
-      <h1 data-test="title">${article.title}</h1>
-      <p data-test="description">${article.description}</p>
-      <span>Read more...</span>
+      <h4 class="text-bold" data-test="title">${article.title}</h4></a>
+      <p class="text-gray" data-test="description">${article.description}</p>
+      <span class="text-muted">Read more...</span>
       <ul class="tag-list">
         ${article.tagList.map((tag) => {
           return html`
-            <li data-test="tag" class="tag-default tag-pill tag-outline">
+            <li data-test="tag" class="chip tag-default tag-pill tag-outline">
               ${tag}
             </li>
           `;
         })}
       </ul>
-    </a>
+    
+    </div>
   </div>
+  <div class="divider"></div>
+  <p></p>
 `;
 
 export const ArticleList = ({ isLoading, articles }, children) => {

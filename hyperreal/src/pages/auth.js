@@ -74,7 +74,7 @@ export const LoadRegisterPage = (page) => (state) => {
 
 // Views
 export const LoginPage = ({ email, password, inProgress, errors }) => html`
-  <div class="auth-page">
+  <div class="auth-page container grid-xs text-center">
     <div class="container page">
       <div class="row">
         <div class="col-md-6 offset-md-3 col-xs-12">
@@ -89,7 +89,7 @@ export const LoginPage = ({ email, password, inProgress, errors }) => html`
             <fieldset>
               <fieldset class="form-group">
                 <input
-                  class="form-control form-control-lg"
+                  class="form-input input-lg"
                   data-test="email"
                   type="email"
                   placeholder="Email"
@@ -100,7 +100,7 @@ export const LoginPage = ({ email, password, inProgress, errors }) => html`
 
               <fieldset class="form-group">
                 <input
-                  class="form-control form-control-lg"
+                  class="form-input input-lg"
                   type="password"
                   data-test="password"
                   placeholder="Password"
@@ -121,7 +121,7 @@ export const LoginPage = ({ email, password, inProgress, errors }) => html`
 `;
 
 export const RegisterPage = ({ username, password, email, inProgress, errors }) => html`
-  <div class="auth-page">
+  <div class="auth-page container grid-xs text-center">
     <div class="container page">
       <div class="row">
         <div class="col-md-6 offset-md-3 col-xs-12">
@@ -136,7 +136,7 @@ export const RegisterPage = ({ username, password, email, inProgress, errors }) 
             <fieldset>
               <fieldset class="form-group">
                 <input
-                  class="form-control form-control-lg"
+                  class="form-input input-lg"
                   type="text"
                   data-test="username"
                   placeholder="Username"
@@ -147,7 +147,7 @@ export const RegisterPage = ({ username, password, email, inProgress, errors }) 
 
               <fieldset class="form-group">
                 <input
-                  class="form-control form-control-lg"
+                  class="form-input input-lg"
                   type="email"
                   data-test="email"
                   placeholder="Email"
@@ -158,7 +158,7 @@ export const RegisterPage = ({ username, password, email, inProgress, errors }) 
 
               <fieldset class="form-group">
                 <input
-                  class="form-control form-control-lg"
+                  class="form-input input-lg"
                   type="password"
                   data-test="password"
                   placeholder="Password"
