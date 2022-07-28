@@ -93,6 +93,8 @@ var articles = []Article {Article{Slug:"Create-a-new-implementation-1", Title:"C
 var comments = []Comment {Comment{Id:"5",CreatedAt:"2021-11-24T12:11:08.480Z",UpdatedAt:"2021-11-24T12:11:08.480Z",Body:"If someone else has started working on an implementation, consider jumping in and helping them! by contacting the author.",Author:Author{Username:"rootz",Bio:"nil",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}},
 Comment{Id:"4",CreatedAt:"2021-11-24T12:11:08.340Z",UpdatedAt:"2021-11-24T12:11:08.340Z",Body:"Before starting a new implementation, please check if there is any work in progress for the stack you want to work on.",Author:Author{Username:"Gerome",Bio:"null",Image:"https://api.realworld.io/images/demo-avatar.png",Following:false}}}
 
+var tags = []string {"implementations", "welcome", "introduction", "codebaseShow"}
+
 func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logger log.Logger) {
 	res := resource{logger}
 
@@ -100,34 +102,37 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 	rg.Get("/articles/feed", res.geta)
 	rg.Get(`/articles/<slug>`, res.gets)
 	rg.Get(`/articles/<slug>/comments`, res.getc)
-
-	rg.Put("/user", func(c *routing.Context) error{
-		var input UpdateSettingRequest
-		if err := c.Read(&input); err != nil {
-			logger.With(c.Request.Context()).Info(err)
-			return errors.BadRequest("")
-		}
-		
-		token, err := generateJWT(entity.User{ID: "100", Email: input.User.Email, Username:input.User.Username, Bio:input.User.Bio, Image:input.User.Image})
-		if err != nil {
-			return err
-		}
-		//input.User.Token = token
-		//return c.Write(input)
-		return c.Write(struct {
-			Token string `json:"token"`
-		}{token})
-	})
-
 	rg.Get("/tags", func(c *routing.Context) error {
-		var tags []string
+		//var tags []string
 		pages := pagination.NewFromRequest(c.Request, len(tags))
 		
-		tags = []string {"implementations"}
+		//tags = []string {"implementations"}
 		pages.Items = tags	
 		return c.Write(pages)
 	})
+	rg.Get(`/profiles/<username>`, func(c *routing.Context) error {
 
+		profile := `{
+				  "profile": {
+				    "username": "jake",
+				    "bio": "I work at statefarm",
+				    "image": "https://api.realworld.io/images/demo-avatar.png",
+				    "following": false
+				  }
+				}`
+
+		jsonMap := make(map[string]interface{})
+		err := json.Unmarshal([]byte(profile), &jsonMap)
+		if err != nil {
+			panic(err)
+		}
+
+		return c.Write(jsonMap)
+	})
+
+	rg.Use(authHandler)
+
+	// the following endpoints require a valid JWT
 	rg.Post("/articles", func(c *routing.Context) error {
 
 		var input CreateArticleRequest
@@ -155,9 +160,34 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 
 		return c.WriteWithStatus(article, http.StatusCreated)
 	})
+	rg.Put(`/articles/<slug>`, res.gets)
+	rg.Delete(`/articles/<slug>`, res.gets)
 
-	rg.Get(`/profiles/<username>`, func(c *routing.Context) error {
+	rg.Post(`/articles/<slug>/comments`, res.getc)
+	rg.Delete(`/articles/<slug>/comments/<id>`, res.getc)
+	
+	rg.Post(`/articles/<slug>/favorite`, res.gets)
+	rg.Delete(`/articles/<slug>/favorite`, res.gets)
 
+	rg.Post(`/profiles/<username>/follow`, func(c *routing.Context) error {
+		profile := `{
+				  "profile": {
+				    "username": "jake",
+				    "bio": "I work at statefarm",
+				    "image": "https://api.realworld.io/images/demo-avatar.png",
+				    "following": false
+				  }
+				}`
+
+		jsonMap := make(map[string]interface{})
+		err := json.Unmarshal([]byte(profile), &jsonMap)
+		if err != nil {
+			panic(err)
+		}
+
+		return c.Write(jsonMap)
+	})
+	rg.Delete(`/profiles/<username>/follow`, func(c *routing.Context) error {
 		profile := `{
 				  "profile": {
 				    "username": "jake",
@@ -176,6 +206,23 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 		return c.Write(jsonMap)
 	})
 
+	rg.Put("/user", func(c *routing.Context) error{
+		var input UpdateSettingRequest
+		if err := c.Read(&input); err != nil {
+			logger.With(c.Request.Context()).Info(err)
+			return errors.BadRequest("")
+		}
+		
+		token, err := generateJWT(entity.User{ID: "100", Email: input.User.Email, Username:input.User.Username, Bio:input.User.Bio, Image:input.User.Image})
+		if err != nil {
+			return err
+		}
+		//input.User.Token = token
+		//return c.Write(input)
+		return c.Write(struct {
+			Token string `json:"token"`
+		}{token})
+	})
 
 }
 

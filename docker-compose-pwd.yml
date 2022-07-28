@@ -4,25 +4,25 @@ services:
     image: bluejedi/go-jun
     restart: on-failure
     ports:
-      - "8080:8080"
+      - "0.0.0.0:8080:8080"
     environment:
       - APP_ENV=local
       - APP_DSN=postgres://db/go_restful?sslmode=disable&user=postgres&password=postgres
     depends_on:
-      - check-db-started 
+      - check-db-started
 
   # Wait For Postgres to be joinable
   check-db-started:
     image: jwilder/dockerize
     depends_on:
       - db
-    command: 'dockerize -wait=tcp://db:5432'    
+    command: 'dockerize -wait=tcp://db:5432'
 
   db:
     image: "postgres:alpine"
     restart: always
     ports:
-      - "5432:5432"
+      - "0.0.0.0:5432:5432"
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"

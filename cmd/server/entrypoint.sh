@@ -13,7 +13,8 @@ if [[ -z ${APP_DSN} ]]; then
 fi
 
 echo "[`date`] Running DB migrations..."
-migrate -database "${APP_DSN}" -path ./migrations up
+#migrate -database "${APP_DSN}" -path ./migrations up
+migrate -database "postgres://db/go_restful?sslmode=disable&user=postgres&password=postgres" -path ./migrations up
 
 echo "[`date`] Starting server..."
 ./server -config ${CONFIG_FILE} >> /var/log/app/server.log 2>&1
