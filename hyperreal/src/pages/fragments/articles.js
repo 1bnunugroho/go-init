@@ -70,7 +70,7 @@ const FavoriteButton = ({ article }) => {
       data-test="favorite-count"
       class=${"btn btn-sm btn-primary pull-xs-right " + style}
     >
-      <i class="ion-heart" /> ${article.favoritesCount}
+      <i class="icon icon-emoji" /> ${article.favoritesCount}
     </button>
   `;
 };

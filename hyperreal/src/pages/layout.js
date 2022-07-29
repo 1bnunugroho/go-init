@@ -11,10 +11,10 @@ const NavItem = ({ page, path }, children) => html`
   
 `;
 
-const UserImage = ({ user }) => html` <img src="${user.image}" class="user-pic" alt="${user.username}" /> `;
+const UserImage = ({ user }) => html` <img src="${user.image}" class="avatar user-pic" data-initial="R" alt="${user.username.substring(0,1).toUpperCase()}" /> `;
 
 const UserLink = ({ user }) => html`
-  ${user.image ? UserImage({ user }) : ""} <span data-test="profile">${user.username}</span>
+  ${user.image ? UserImage({ user }) : ""} <span class="text-capitalize" data-test="profile">${user.username}</span>
 `;
 
 const P404Page = ({state}) => html`
@@ -36,9 +36,9 @@ const Header = ({ page, user }) =>
       </section>
       <section class="navbar-section">
         ${NavItem({ page, path: HOME }, "Home")}
-        ${user.token && NavItem({ page, path: NEW_EDITOR }, html` <i class="ion-compose" /> New Post `)}
+        ${user.token && NavItem({ page, path: NEW_EDITOR }, html` <i class="icon icon-edit" /> New Post `)}
         ${user.token ? 
-          NavItem({ page, path: SETTINGS }, html` <i class="ion-gear-a" /> Settings `) 
+          NavItem({ page, path: SETTINGS }, html` <i class="icon icon-apps" /> Settings `) 
           : NavItem({ page, path: LOGIN }, "Sign in")}
         ${user.token ? 
           NavItem({ page, path: profile(user.username) }, UserLink({ user })) 
