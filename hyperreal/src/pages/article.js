@@ -155,9 +155,9 @@ const CommentInput = ({ state }) => html`
         rows="3"
       />
     </div>
-    <div class="card-footer">
+    <div class="card-footer bg-gray">
       ${state.user.image
-        ? html`<img src=${state.user.image} class="comment-author-img" alt=${state.user.username} />`
+        ? html`<img src=${state.user.image} class="avatar text-capitalize comment-author-img" data-initial="R" alt=${state.user.username.substring(0,1)} />`
         : ""}
       <button class="btn btn-sm btn-primary" type="submit">
         Post Comment
@@ -183,7 +183,7 @@ const Comment = ({ comment, slug, user }) =>
       <div class="card-body">
         <p data-test="commentText" class="card-text">${comment.body}</p>
       </div>
-      <div class="card-footer">
+      <div class="card-footer bg-gray">
         <a data-test="commentAuthor" href=${profile(comment.author.username)} class="avatar comment-author">
           <img src=${comment.author.image} class="comment-author-img" alt=${comment.author.username} />
         </a>

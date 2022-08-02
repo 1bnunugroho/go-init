@@ -10,6 +10,7 @@ import (
 	"github.com/qiangxue/go-rest-api/pkg/pagination"
 	"net/http"
 	"encoding/json"
+	//"io"
 )
 
 type Identity interface {
@@ -163,7 +164,7 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 	rg.Put(`/articles/<slug>`, res.gets)
 	rg.Delete(`/articles/<slug>`, res.gets)
 
-	rg.Post(`/articles/<slug>/comments`, res.getc)
+	rg.Post(`/articles/<slug>/comments`, res.get1c)
 	rg.Delete(`/articles/<slug>/comments/<id>`, res.getc)
 	
 	rg.Post(`/articles/<slug>/favorite`, res.gets)
@@ -200,7 +201,7 @@ func RegisterHandlers(rg *routing.RouteGroup, authHandler routing.Handler, logge
 		jsonMap := make(map[string]interface{})
 		err := json.Unmarshal([]byte(profile), &jsonMap)
 		if err != nil {
-			panic(err)
+			return errors.BadRequest("")
 		}
 
 		return c.Write(jsonMap)
@@ -246,6 +247,45 @@ func (r resource) getc(c *routing.Context) error {
 	pages := pagination.NewFromRequest(c.Request, len(articles))
 	pages.Items = comments
 	return c.Write(pages)
+}
+
+func (r resource) get1c(c *routing.Context) error {
+
+	/*body, err := io.ReadAll(c.Request.Body)
+	jsonMap := make(map[string]interface{})
+	
+	err = json.Unmarshal([]byte(body), &jsonMap)
+	if err != nil {
+		return errors.BadRequest("")
+	}
+	val := jsonMap["comment"].(map[string]interface{})["body"]*/
+
+	input := make(map[string]interface{})
+	if err := c.Read(&input); err != nil {
+		//logger.With(c.Request.Context()).Info(err)
+		return errors.BadRequest("")
+	}
+
+	val := input["comment"].(map[string]interface{})["body"]
+
+	now := time.Now();
+	comment := `{
+	  "comment": {
+	  	"id": 100,
+	    "createdAt": "` + now.String() + `",
+	    "updatedAt": "` + now.String() + `",
+	    "body": "` + val.(string) +`",
+	    "author": {"username":"rootz","bio":"nil","image":"https://api.realworld.io/images/demo-avatar.png","following":"false"}
+	  }
+	}`
+
+	jsonMap := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(comment), &jsonMap); err != nil {
+	//if err != nil {
+		return errors.BadRequest("")
+	}
+
+	return c.WriteWithStatus(jsonMap, http.StatusCreated)
 }
 
 // generateJWT generates a JWT that encodes an identity.

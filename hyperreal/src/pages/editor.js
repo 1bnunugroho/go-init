@@ -123,11 +123,11 @@ export const EditorPage = ({ title, description, body, currentTag, tagList, erro
                   oninput=${(state, event)=>({...state, currentTag: event.target.value})}
                 />
 
-                <div class="tag-list">
+                <div class="tag-list text-left">
                   ${tagList.map(
                     (tag) =>
                       html`
-                        <span data-test="tag" class="tag-default tag-pill">
+                        <span data-test="tag" class="chip tag-default tag-pill">
                           <i class="ion-close-round" data-test="remove-tag" onclick=${RemoveTag(tag)} />
                           ${tag}
                         </span>
