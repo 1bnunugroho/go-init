@@ -2,7 +2,8 @@ package auth
 
 import (
 	"context"
-	"github.com/dgrijalva/jwt-go"
+	//"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	routing "github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/go-ozzo/ozzo-routing/v2/auth"
 	"github.com/qiangxue/go-rest-api/internal/entity"
@@ -13,9 +14,10 @@ import (
 // Handler returns a JWT-based authentication middleware.
 func Handler(verificationKey string) routing.Handler {
 	return auth.JWT(verificationKey, auth.JWTOptions{TokenHandler: handleToken})
+	//return auth.JWT(verificationKey, auth.JWTOptions{})
 }
 
-// handleToken stores the user identity in the request context so that it can be accessed elsewhere.
+//handleToken stores the user identity in the request context so that it can be accessed elsewhere.
 func handleToken(c *routing.Context, token *jwt.Token) error {
 	ctx := WithUser(
 		c.Request.Context(),
