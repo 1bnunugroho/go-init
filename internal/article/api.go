@@ -6,7 +6,7 @@ import (
 	"github.com/qiangxue/go-rest-api/pkg/log"
 	"time"
 	//"github.com/dgrijalva/jwt-go"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/qiangxue/go-rest-api/internal/entity"
 	"github.com/qiangxue/go-rest-api/pkg/pagination"
 	"net/http"
