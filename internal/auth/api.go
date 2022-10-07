@@ -19,22 +19,18 @@ func RegisterHandlers(rg *routing.RouteGroup, service Service, logger log.Logger
 func login(service Service, logger log.Logger) routing.Handler {
 	return func(c *routing.Context) error {
 
-		type userreq struct {
+		var userreq struct {
 			//Username string `json:"username"`
-			Email string `json:"email"`
+			Email    string `json:"email"`
 			Password string `json:"password"`
 		}
 
-		var req struct {
-			User userreq `json:"user"`
-		}
-
-		if err := c.Read(&req); err != nil {
+		if err := c.Read(&userreq); err != nil {
 			logger.With(c.Request.Context()).Errorf("invalid request: %v", err)
 			return errors.BadRequest("")
 		}
 
-		token, err := service.Login(c.Request.Context(), req.User.Email, req.User.Password)
+		token, err := service.Login(c.Request.Context(), userreq.Email, userreq.Password)
 		if err != nil {
 			return err
 		}
@@ -48,28 +44,19 @@ func login(service Service, logger log.Logger) routing.Handler {
 func register(service Service, logger log.Logger) routing.Handler {
 	return func(c *routing.Context) error {
 
-		type Userreq struct {
-			Email string `json:"email"`
+		var reqData struct {
+			Email    string `json:"email"`
 			Username string `json:"username"`
 			Password string `json:"password"`
+			Name     string `json:"name"`
 		}
 
-		var input struct {
-			User Userreq `json:"user"`
-		}
-
-		//var input = userreq {}
-		//tl := input.[:]
-		
-		//var input CreateUserRequest
-		//var input = map[string]interface{}
-
-		if err := c.Read(&input); err != nil {
+		if err := c.Read(&reqData); err != nil {
 			logger.With(c.Request.Context()).Errorf("invalid request: %v", err)
 			return errors.BadRequest("")
 		}
 
-		token, err := service.Register(c.Request.Context(), CreateUserRequest{input.User.Email, input.User.Username, input.User.Password})
+		token, err := service.Register(c.Request.Context(), CreateUserRequest{reqData.Email, reqData.Username, reqData.Password, reqData.Name})
 		if err != nil {
 			return err
 		}
@@ -82,7 +69,7 @@ func register(service Service, logger log.Logger) routing.Handler {
 
 func query(service Service, logger log.Logger) routing.Handler {
 	return func(c *routing.Context) error {
-		
+
 		count, err := service.Count(c.Request.Context())
 		if err != nil {
 			return err

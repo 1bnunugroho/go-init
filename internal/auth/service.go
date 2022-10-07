@@ -2,15 +2,17 @@ package auth
 
 import (
 	"context"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+
 	//"github.com/dgrijalva/jwt-go"
+	"time"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/qiangxue/go-rest-api/internal/entity"
 	"github.com/qiangxue/go-rest-api/internal/errors"
 	"github.com/qiangxue/go-rest-api/pkg/log"
-	"time"
 	"golang.org/x/crypto/bcrypt"
-
 )
 
 // Service encapsulates the authentication logic.
@@ -31,9 +33,10 @@ type User struct {
 
 // CreateUserRequest represents an user creation request.
 type CreateUserRequest struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Name     string `json:"name"`
 }
 
 // Validate validates the CreateUserRequest fields.
@@ -42,6 +45,16 @@ func (m CreateUserRequest) Validate() error {
 		validation.Field(&m.Email, validation.Required, validation.Length(0, 128)),
 		validation.Field(&m.Username, validation.Required, validation.Length(0, 128)),
 		validation.Field(&m.Password, validation.Required, validation.Length(0, 128)),
+	)
+}
+
+// Validate validates the CreateUserRequest fields.
+func (m CreateUserRequest) ValidateUsers() error {
+	return validation.ValidateStruct(&m,
+		validation.Field(&m.Email, validation.Required, validation.Length(0, 128)),
+		validation.Field(&m.Username, validation.Required, validation.Length(0, 128)),
+		validation.Field(&m.Password, validation.Required, validation.Length(0, 128)),
+		validation.Field(&m.Name, validation.Required, validation.Length(0, 128)),
 	)
 }
 
@@ -56,11 +69,10 @@ type Identity interface {
 	GetImage() string
 }
 
-
 type service struct {
 	signingKey      string
 	tokenExpiration int
-	repo   			Repository
+	repo            Repository
 	logger          log.Logger
 }
 
@@ -83,46 +95,25 @@ func (s service) Login(ctx context.Context, username, password string) (string, 
 func (s service) Register(ctx context.Context, req CreateUserRequest) (string, error) {
 	//func (s service) Register(ctx context.Context, username, password, email string) (string, error) {
 	logger := s.logger.With(ctx, "req", req)
-	if err := req.Validate(); err != nil {
+	if err := req.ValidateUsers(); err != nil {
 		return "", err
 	}
-	
+
 	logger.Infof("Validate successful")
-
-	id := entity.GenerateID()
-	logger.Infof(id)
-
-	now := time.Now()
-	logger.Infof("time")
-
 	logger.Infof(req.Password)
 	var hashedPassword, err = hashPassword(req.Password)
 	logger.Infof(hashedPassword)
 
-  	if err != nil {
-    	logger.Infof("Error hashing password")
-    }
-
-	err = s.repo.Create(ctx, entity.User{
-		ID:        	id,
-		Email:      req.Email,
-		Username:	req.Username,
-		Password:	hashedPassword,
-		//Password:	req.Password,
-		CreatedAt: 	now,
-		UpdatedAt: 	now,
-	})
+	if err != nil {
+		logger.Infof("Error hashing password")
+	}
 
 	if err != nil {
 		//return id, nil
 		logger.Infof("Error create")
-		return "", err	
+		return "", err
 	}
 
-	//if err != nil {
-	//	logger.Infof("harusnya sukses")
-	//	return id, nil
-	//}
 	if identity := s.authenticate(ctx, req.Email, req.Password); identity != nil {
 		return s.generateJWT(identity)
 	}
@@ -185,7 +176,7 @@ func (s service) authenticate(ctx context.Context, email, password string) Ident
 	if email == "demo@local.host" && password == "pass" {
 		logger.Infof("authentication successful")
 		//return entity.User{ID: "100", Name: "demo"}
-		return entity.User{ID: "100", Email: "demo@local.host", Username:"rootz", Bio:"null", Image:"null"}
+		return entity.User{ID: "100", Email: "demo@local.host", Username: "rootz", Bio: "null", Image: "null"}
 	}
 
 	user, err := s.repo.GetUserName(ctx, email)
@@ -197,15 +188,15 @@ func (s service) authenticate(ctx context.Context, email, password string) Ident
 	if doPasswordsMatch(user.Password, password) {
 		logger.Infof(`dpt user user.Password , password`)
 		logger.Infof("dpt user")
-		return entity.User{ID: user.ID, Email: user.Email, Username:user.Username, Bio:user.Bio, Image:user.Image}
+		return entity.User{ID: user.ID, Email: user.Email, Username: user.Username, Bio: user.Bio, Image: user.Image}
 	}
 
-		// if username == user.Username {
-		// 	if comparePasswords(user.Password, getPwd(password)) {
-		// 		logger.Infof("authentication successful")
-		// 		return entity.User{ID: user.ID, Email: user.Email}
-		// 	}
-		// }
+	// if username == user.Username {
+	// 	if comparePasswords(user.Password, getPwd(password)) {
+	// 		logger.Infof("authentication successful")
+	// 		return entity.User{ID: user.ID, Email: user.Email}
+	// 	}
+	// }
 
 	logger.Infof("authentication failed")
 	return nil
@@ -214,12 +205,12 @@ func (s service) authenticate(ctx context.Context, email, password string) Ident
 // generateJWT generates a JWT that encodes an identity.
 func (s service) generateJWT(identity Identity) (string, error) {
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":   identity.GetID(),
-		"email": identity.GetEmail(),
+		"id":       identity.GetID(),
+		"email":    identity.GetEmail(),
 		"username": identity.GetUserName(),
-		"bio": identity.GetBio(),
-		"image": identity.GetImage(),
-		"iat": time.Now().Unix(),
-		"exp":  time.Now().Add(time.Duration(s.tokenExpiration) * time.Hour).Unix(),
+		"bio":      identity.GetBio(),
+		"image":    identity.GetImage(),
+		"iat":      time.Now().Unix(),
+		"exp":      time.Now().Add(time.Duration(s.tokenExpiration) * time.Hour).Unix(),
 	}).SignedString([]byte(s.signingKey))
 }

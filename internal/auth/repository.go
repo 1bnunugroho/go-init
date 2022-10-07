@@ -2,10 +2,11 @@ package auth
 
 import (
 	"context"
+
+	dbx "github.com/go-ozzo/ozzo-dbx"
 	"github.com/qiangxue/go-rest-api/internal/entity"
 	"github.com/qiangxue/go-rest-api/pkg/dbcontext"
 	"github.com/qiangxue/go-rest-api/pkg/log"
-	"github.com/go-ozzo/ozzo-dbx"
 )
 
 // Repository encapsulates the logic to access users from the data source.
@@ -24,12 +25,21 @@ type Repository interface {
 	Update(ctx context.Context, user entity.User) error
 	// Delete removes the user with given ID from the storage.
 	Delete(ctx context.Context, id string) error
+
+	// Create saves a new user in the storage.
+	UsersInsert(ctx context.Context, user entity.Users) error
 }
 
 // repository persists users in database
 type repository struct {
 	db     *dbcontext.DB
 	logger log.Logger
+}
+
+// Create saves a new users record in the database.
+// It returns the ID of the newly inserted user record.
+func (r repository) UsersInsert(ctx context.Context, users entity.Users) error {
+	return r.db.With(ctx).Model(&users).Insert()
 }
 
 // NewRepository creates a new user repository
@@ -78,6 +88,7 @@ func (r repository) Count(ctx context.Context) (int, error) {
 	err := r.db.With(ctx).Select("COUNT(*)").From("uzer").Row(&count)
 	return count, err
 }
+
 // Count returns the number of the user records in the database.
 func (r repository) CountUser(ctx context.Context, username string) (int, error) {
 	var count int
